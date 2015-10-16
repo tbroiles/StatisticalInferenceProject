@@ -1,0 +1,41 @@
+---
+title: "The Mean of a Sampled Exponential Distribution"
+output: pdf_document
+---
+
+This
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r, echo=FALSE}
+set.seed(8008)
+options(digits=3)
+```
+
+```{r}
+MeanExpData <- replicate(1000, mean(rexp(40,.2)))
+summary(MeanExpData)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+
+mew = mean(MeanExpData)
+sig = sqrt(var(MeanExpData))
+
+h_data <- hist(MeanExpData, freq = F, main = 'Histogram of Averaged Exponential Samples', xlab = 'Average of 40 Exponential Distribution Samples')
+abline(v = mean(MeanExpData), col = 'red')
+abline(v = mean(MeanExpData)-sqrt(var(MeanExpData)), col = 'red', lty = 2)
+abline(v = mean(MeanExpData)+sqrt(var(MeanExpData)), col = 'red', lty = 2)
+
+lines((0:100)/10, dnorm((0:100)/10, mean=5, sd = 5/sqrt(40)), col = 'blue')
+
+text(mew+.4, y = .52, labels = bquote(mu==.(mew)), col = 'red')
+text(mew+.6 + sig, y = .52, labels = bquote(mu+sigma==.(mew + sig)), col = 'red')
+text(mew-.6 - sig, y = .52, labels = bquote(mu-sigma==.(mew - sig)), col = 'red')
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
