@@ -3,19 +3,21 @@ title: "The Mean of a Sampled Exponential Distribution"
 output: pdf_document
 ---
 
-This
+We have collected 1000 means from 40 samplings of exponential distribution.  We then calculated the average, $\overline{\mu}$, and standard deviation, $\overline{\sigma}$, of those 1000 means.  Finally, we compared $\overline{\mu}$ and $\overline{\sigma}$ to the theoretical mean, $\mu$, and standard error, SE.  The standard error is the standard deviation of the exponential distribution divided by the square root of the number of samples, $\sigma/\sqrt{n}$.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 ```{r, echo=FALSE}
-set.seed(8008)
+set.seed(80085)
 options(digits=3)
 ```
 
+The below analysis shows that the sample mean and the theoretical mean are statistically identical.
 ```{r}
-MeanExpData <- replicate(1000, mean(rexp(40,.2)))
-summary(MeanExpData)
+lambda <- .2
+MeanExpData <- replicate(1000, mean(rexp(40,lambda)))
+print(paste0(sprintf('Sample mean: %.2f',mean(MeanExpData)), 
+             sprintf(', Sample error: %.2f', sqrt(var(MeanExpData))), 
+             sprintf(', Mean: %.2f', 1/lambda),
+             sprintf(', Standard Error: %.2f', (1/lambda)/sqrt(40))))
 ```
 
 You can also embed plots, for example:
@@ -25,16 +27,24 @@ You can also embed plots, for example:
 mew = mean(MeanExpData)
 sig = sqrt(var(MeanExpData))
 
-h_data <- hist(MeanExpData, freq = F, main = 'Histogram of Averaged Exponential Samples', xlab = 'Average of 40 Exponential Distribution Samples')
-abline(v = mean(MeanExpData), col = 'red')
-abline(v = mean(MeanExpData)-sqrt(var(MeanExpData)), col = 'red', lty = 2)
-abline(v = mean(MeanExpData)+sqrt(var(MeanExpData)), col = 'red', lty = 2)
+h_data <- hist(MeanExpData, freq = F, main = 'Histogram of Averaged Exponential Samples', xlab = 'Average of 40 Exponential Distribution Samples', breaks = 20)
+abline(v = mean(MeanExpData), col = 'black', lty = 3)
+abline(v = 5, col = 'red', lty = 3)
 
-lines((0:100)/10, dnorm((0:100)/10, mean=5, sd = 5/sqrt(40)), col = 'blue')
+arrows(mean(MeanExpData), .52,mean(MeanExpData)-sqrt(var(MeanExpData)), .52, code = 3,length = .1)
+arrows(mean(MeanExpData), .52,mean(MeanExpData)+sqrt(var(MeanExpData)), .52, code = 3,length = .1)
 
-text(mew+.4, y = .52, labels = bquote(mu==.(mew)), col = 'red')
-text(mew+.6 + sig, y = .52, labels = bquote(mu+sigma==.(mew + sig)), col = 'red')
-text(mew-.6 - sig, y = .52, labels = bquote(mu-sigma==.(mew - sig)), col = 'red')
+arrows(5, .31,5-5/sqrt(40), .31, code = 3,length = .1, col = 'red')
+arrows(5, .31,5+5/sqrt(40), .31, code = 3,length = .1, col = 'red')
+
+lines((0:100)/10, dnorm((0:100)/10, mean=5, sd = 5/sqrt(40)), col = 'red')
+
+text(mew-.4, y = .55, labels = bquote(bar(mu)==.(mew)), col = 'black')
+text(mew+.6 + sig, y = .52, labels = bquote(bar(mu)+bar(sigma)==.(mew + sig)), col = 'black')
+text(mew-.6 - sig, y = .52, labels = bquote(bar(mu)-bar(sigma)==.(mew - sig)), col = 'black')
+text(5+5/sqrt(40)+.65, y = .31, labels = bquote(mu+SE==.(5 + 5/sqrt(40))), col = 'red')
+text(5-5/sqrt(40)-.6, y = .31, labels = bquote(mu-SE==.(5 - 5/sqrt(40))), col = 'red')
+text(7.3, y = .2, labels = 'Gaussian Distribution', col = 'red')
 
 ```
 
